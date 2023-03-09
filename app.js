@@ -8,10 +8,10 @@ function getData(){
     .then(data=> data.todos.forEach(e=>{
         div.innerHTML += `
         <p 
-        class=${e.completed && 'compeleted'}
+        style='${e.completed && 'text-decoration: line-through'}'
         >${e.title} 
-        <span onclick="deleteTodo('${e._id}')">|SIL|</span>
-        <span onclick="updateTodo('${e}')">Update|</span>
+        <span onclick='deleteTodo('${e._id}')'>|SIL|</span>
+        <span onclick='updateTodo(${JSON.stringify(e)})'>Update|</span>
         </p>`
     }))
 }
@@ -49,9 +49,17 @@ function deleteTodo(id){
     })
 }
 
-function updateTodo(e){
-    console.log(e);
-    //fetch('https://crudapp-pwlck5pebq-el.a.run.app/api/todos/todoID')
+function updateTodo(value){
+    fetch(`https://crudapp-pwlck5pebq-el.a.run.app/api/todos/${value._id}`,{
+        method:"PUT",
+        headers: { 'Content-Type': "application/json" },
+        body: JSON.stringify({ ...value, completed: value.completed==false?true:false})
+    }).then(e=> {
+        if (e.status === 200) {
+            div.innerHTML = '';
+            getData()
+        }
+    })
 }
 
 
